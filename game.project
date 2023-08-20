@@ -1,0 +1,25 @@
+[bootstrap]
+main_collection = /main/main.collectionc
+
+[script]
+shared_state = 1
+
+[display]
+width = 1031
+height = 580
+
+[android]
+input_method = HiddenInputField
+
+[project]
+title = Atomics
+
+[collectionfactory]
+max_count = 3000
+
+[sprite]
+max_count = 10000
+
+[collection]
+max_instances = 10000
+
