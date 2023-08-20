@@ -13,6 +13,8 @@ input_method = HiddenInputField
 
 [project]
 title = Atomics
+dependencies#0 = https://github.com/britzl/monarch/archive/master.zip
+dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/0.11.0.zip
 
 [collectionfactory]
 max_count = 3000

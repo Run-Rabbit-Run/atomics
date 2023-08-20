@@ -1,4 +1,5 @@
--- local atoms = {}
+local state = require("main.state.state")
+
 local sqrt, floor, ceil = math.sqrt, math.floor, math.ceil
 local WIDTH = 1031
 local HEIGHT = 580
@@ -97,13 +98,16 @@ local function update_atoms_position(atom_group)
 end
 
 function init(self)
+	print('STARTt')
+	self.time = 0
+
 	self.red = {}
 	self.green = {}
 	self.blue = {}
 
-	render_atoms(self, 1000, "red")
-	render_atoms(self, 1000, "green")
-	render_atoms(self, 1000, "blue")
+	render_atoms(self, state.ATOMS_COUNT.RED, "red")
+	render_atoms(self, state.ATOMS_COUNT.GREEN, "green")
+	render_atoms(self, state.ATOMS_COUNT.BLUE, "blue")
 end
 
 function final(self)
@@ -128,6 +132,7 @@ function update(self, dt)
 	-- rule(self.blue, self.blue, 0.36)
 	-- rule(self.blue, self.green, 0.97)
 	-- rule(self.blue, self.red, -0.21)
+
 	update_atoms_position(self.red)
 	update_atoms_position(self.green)
 	update_atoms_position(self.blue)
