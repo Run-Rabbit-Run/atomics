@@ -84,7 +84,8 @@ local function render_atoms(self, number, color)
 	
 	local component = "#atom_factory"
 	for i = 1, #group do
-		local atom = factory.create(component, vmath.vector3(group[i].x, group[i].y, 0), nil, {color = group[i].color})
+		local atom = factory.create(component, vmath.vector3(group[i].x, group[i].y, 0))
+		sprite.play_flipbook(atom, hash(color))
 		group[i].instance = atom
 	end
 
@@ -98,29 +99,136 @@ local function update_atoms_position(atom_group)
 end
 
 function init(self)
+	msg.post(".", "acquire_input_focus")
+	self.profiler = false
 	print('STARTt')
+
 	self.time = 0
 
 	self.red = {}
 	self.green = {}
 	self.blue = {}
+	self.yellow = {}
+	self.pink = {}
 
-	render_atoms(self, state.ATOMS_COUNT.RED, "red")
-	render_atoms(self, state.ATOMS_COUNT.GREEN, "green")
-	render_atoms(self, state.ATOMS_COUNT.BLUE, "blue")
+	if state.ATOMS_COUNT.RED > 0 then
+		render_atoms(self, state.ATOMS_COUNT.RED, "red")
+	end
+
+	if state.ATOMS_COUNT.GREEN > 0 then
+		render_atoms(self, state.ATOMS_COUNT.GREEN, "green")
+	end
+
+	if state.ATOMS_COUNT.BLUE > 0 then
+		render_atoms(self, state.ATOMS_COUNT.BLUE, "blue")
+	end
+
+	if state.ATOMS_COUNT.YELLOW > 0 then
+		render_atoms(self, state.ATOMS_COUNT.BLUE, "yellow")
+	end
+
+	if state.ATOMS_COUNT.PINK > 0 then
+		render_atoms(self, state.ATOMS_COUNT.PINK, "pink")
+	end
 end
 
 function final(self)
 end
 
 function update(self, dt)
-	rule(self.green, self.green, -0.32)
-	rule(self.green, self.red, -0.17)
-	rule(self.green, self.blue, 0.34)
-	rule(self.red, self.red, -0.1)
-	rule(self.red, self.green, -0.34)
-	rule(self.blue, self.blue, 0.15)
-	rule(self.blue, self.green, -0.2)
+	-- green rules
+	if state.ATOMS_COUNT.GREEN > 0 then
+		rule(self.green, self.green, state.ATOMS_RULES.GREEN_GREEN)
+	end
+	if state.ATOMS_COUNT.GREEN > 0 and state.ATOMS_COUNT.RED > 0 then
+		rule(self.green, self.red, state.ATOMS_RULES.GREEN_RED)
+	end
+	if state.ATOMS_COUNT.GREEN > 0 and state.ATOMS_COUNT.BLUE > 0 then
+		rule(self.green, self.blue, state.ATOMS_RULES.GREEN_BLUE)
+	end
+	if state.ATOMS_COUNT.GREEN > 0 and state.ATOMS_COUNT.YELLOW > 0 then
+		rule(self.green, self.yellow, state.ATOMS_RULES.GREEN_YELLOW)
+	end
+	if state.ATOMS_COUNT.GREEN > 0 and state.ATOMS_COUNT.PINK > 0 then
+		rule(self.green, self.pink, state.ATOMS_RULES.GREEN_PINK)
+	end
+
+	-- red rules
+	if state.ATOMS_COUNT.RED > 0 then
+		rule(self.red, self.red, state.ATOMS_RULES.RED_RED)
+	end
+	if state.ATOMS_COUNT.RED > 0 and state.ATOMS_COUNT.GREEN > 0 then
+		rule(self.red, self.green, state.ATOMS_RULES.RED_GREEN)
+	end
+	if state.ATOMS_COUNT.RED > 0 and state.ATOMS_COUNT.BLUE > 0 then
+		rule(self.red, self.blue, state.ATOMS_RULES.RED_BLUE)
+	end
+	if state.ATOMS_COUNT.RED > 0 and state.ATOMS_COUNT.YELLOW > 0 then
+		rule(self.red, self.yellow, state.ATOMS_RULES.RED_YELLOW)
+	end
+	if state.ATOMS_COUNT.RED > 0 and state.ATOMS_COUNT.PINK > 0 then
+		rule(self.red, self.pink, state.ATOMS_RULES.RED_PINK)
+	end
+
+	-- blue rules
+	if state.ATOMS_COUNT.BLUE > 0 then
+		rule(self.blue, self.blue, state.ATOMS_RULES.BLUE_BLUE)
+	end
+	if state.ATOMS_COUNT.BLUE > 0 and state.ATOMS_COUNT.GREEN > 0 then
+		rule(self.blue, self.green, state.ATOMS_RULES.BLUE_GREEN)
+	end
+	if state.ATOMS_COUNT.BLUE > 0 and state.ATOMS_COUNT.RED > 0 then
+		rule(self.blue, self.red, state.ATOMS_RULES.BLUE_RED)
+	end
+	if state.ATOMS_COUNT.BLUE > 0 and state.ATOMS_COUNT.YELLOW > 0 then
+		rule(self.blue, self.yellow, state.ATOMS_RULES.BLUE_YELLOW)
+	end
+	if state.ATOMS_COUNT.BLUE > 0 and state.ATOMS_COUNT.PINK > 0 then
+		rule(self.blue, self.pink, state.ATOMS_RULES.BLUE_PINK)
+	end
+
+	-- yellow rules
+	if state.ATOMS_COUNT.YELLOW > 0 then
+		rule(self.yellow, self.yellow, state.ATOMS_RULES.YELLOW_YELLOW)
+	end
+	if state.ATOMS_COUNT.YELLOW > 0 and state.ATOMS_COUNT.GREEN > 0 then
+		rule(self.yellow, self.green, state.ATOMS_RULES.YELLOW_GREEN)
+	end
+	if state.ATOMS_COUNT.YELLOW > 0 and state.ATOMS_COUNT.RED > 0 then
+		rule(self.yellow, self.red, state.ATOMS_RULES.YELLOW_RED)
+	end
+	if state.ATOMS_COUNT.YELLOW > 0 and state.ATOMS_COUNT.BLUE > 0 then
+		rule(self.yellow, self.blue, state.ATOMS_RULES.YELLOW_BLUE)
+	end
+	if state.ATOMS_COUNT.YELLOW > 0 and state.ATOMS_COUNT.PINK > 0 then
+		rule(self.yellow, self.pink, state.ATOMS_RULES.YELLOW_PINK)
+	end
+
+	-- pink rules
+	if state.ATOMS_COUNT.PINK > 0 then
+		rule(self.pink, self.pink, state.ATOMS_RULES.PINK_PINK)
+	end
+	if state.ATOMS_COUNT.PINK > 0 and state.ATOMS_COUNT.GREEN > 0 then
+		rule(self.pink, self.green, state.ATOMS_RULES.PINK_GREEN)
+	end
+	if state.ATOMS_COUNT.PINK > 0 and state.ATOMS_COUNT.RED > 0 then
+		rule(self.pink, self.red, state.ATOMS_RULES.PINK_RED)
+	end
+	if state.ATOMS_COUNT.PINK > 0 and state.ATOMS_COUNT.BLUE > 0 then
+		rule(self.pink, self.blue, state.ATOMS_RULES.PINK_BLUE)
+	end
+	if state.ATOMS_COUNT.PINK > 0 and state.ATOMS_COUNT.YELLOW > 0 then
+		rule(self.pink, self.yellow, state.ATOMS_RULES.PINK_YELLOW)
+	end
+
+	-- эталонные правила
+	-- rule(self.green, self.green, -0.32)
+	-- rule(self.green, self.red, -0.17)
+	-- rule(self.green, self.blue, 0.34)
+	-- rule(self.red, self.red, -0.1)
+	-- rule(self.red, self.green, -0.34)
+	-- rule(self.blue, self.blue, 0.15)
+	-- rule(self.blue, self.green, -0.2)
 
 	
 	-- rule(self.red, self.red, 0.85)
@@ -136,6 +244,8 @@ function update(self, dt)
 	update_atoms_position(self.red)
 	update_atoms_position(self.green)
 	update_atoms_position(self.blue)
+	update_atoms_position(self.yellow)
+	update_atoms_position(self.pink)
 end
 
 function fixed_update(self, dt)
@@ -145,6 +255,18 @@ function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
+	if action_id == hash("key_space") and action.pressed then
+		if self.profiler then
+			profiler.enable_ui(false)
+			self.profiler = false
+		else 
+			profiler.enable_ui(true)
+			self.profiler = true
+
+			profiler.get_memory_usage()
+			profiler.get_cpu_usage()
+		end
+	end
 end
 
 function on_reload(self)

@@ -1,40 +1,88 @@
 local druid = require("druid.druid")
 local state = require("main.state.state")
 
-function init_count_buttons(self)
-	self.red_count = self.druid:new_input("input_red_count_box", "input_red_count_text",  gui.KEYBOARD_TYPE_NUMBER_PAD)
-	:set_allowed_characters("[%d,.]")
-	:set_max_length(3)
+function init_color_sliders(self)
+	init_slider_color(self, "red")
+	init_slider_color(self, "green")
+	init_slider_color(self, "blue")
+	init_slider_color(self, "yellow")
+	init_slider_color(self, "pink")
+end
 
-	self.green_count = self.druid:new_input("input_green_count_box", "input_green_count_text",  gui.KEYBOARD_TYPE_NUMBER_PAD)
-	:set_allowed_characters("[%d,.]")
-	:set_max_length(3)
+function init_rule_sliders(self)
+	init_slider_ratio(self, "green_red")
+	init_slider_ratio(self, "green_green")
+	init_slider_ratio(self, "green_blue")
+	init_slider_ratio(self, "green_yellow")
+	init_slider_ratio(self, "green_pink")
 
-	self.blue_count = self.druid:new_input("input_blue_count_box", "input_blue_count_text",  gui.KEYBOARD_TYPE_NUMBER_PAD)
-	:set_allowed_characters("[%d,.]")
-	:set_max_length(3)
+	init_slider_ratio(self, "blue_red")
+	init_slider_ratio(self, "blue_green")
+	init_slider_ratio(self, "blue_blue")
+	init_slider_ratio(self, "blue_yellow")
+	init_slider_ratio(self, "blue_pink")
+
+	init_slider_ratio(self, "yellow_red")
+	init_slider_ratio(self, "yellow_green")
+	init_slider_ratio(self, "yellow_blue")
+	init_slider_ratio(self, "yellow_yellow")
+	init_slider_ratio(self, "yellow_pink")
+
+	init_slider_ratio(self, "pink_red")
+	init_slider_ratio(self, "pink_green")
+	init_slider_ratio(self, "pink_blue")
+	init_slider_ratio(self, "pink_yellow")
+	init_slider_ratio(self, "pink_pink")
+
+	init_slider_ratio(self, "red_red")
+	init_slider_ratio(self, "red_green")
+	init_slider_ratio(self, "red_blue")
+	init_slider_ratio(self, "red_yellow")
+	init_slider_ratio(self, "red_pink")
+end
+
+function init_druid_components(self)
+	self.druid = druid.new(self)
+	local slider = require("druid.extended.slider")
+	druid.register("slider", slider)
+	local input = require("druid.extended.input")
+	druid.register("input", input)
+end
+
+function init_slider_color(self, color)
+	local slider_pin_name = color .. "/slider_color_pin"
+	local slider_text_name = color .. "/slider_color_text"
+	local init_state = state.ATOMS_COUNT[string.upper(color)]
+	self[color] = self.druid:new_slider(slider_pin_name, vmath.vector3(95, 0, 0), function(_, value)
+		local new_value = math.ceil(value * 999)
+		gui.set_text(gui.get_node(slider_text_name), new_value .. "")
+		state.ATOMS_COUNT[string.upper(color)] = new_value
+	end):set(init_state / 1000)
+end
+
+function init_slider_ratio(self, rule_colors)
+	local slider_pin_name = rule_colors .. "/slider_color_pin"
+	local slider_text_name = rule_colors .. "/slider_color_text"
+	local init_state = (state.ATOMS_RULES[string.upper(rule_colors)] + 1) / 2
+	self[rule_colors] = self.druid:new_slider(slider_pin_name, vmath.vector3(45, 0, 0), function(_, value)
+		local new_value = string.format("%.2f", value * 2 - 1)
+		gui.set_text(gui.get_node(slider_text_name), new_value)
+		state.ATOMS_RULES[string.upper(rule_colors)] = tonumber(new_value)
+	end):set(init_state)
 end
 
 function apply_button(self)
-	state.ATOMS_COUNT.RED = self.red_count:get_text()
-	state.ATOMS_COUNT.GREEN = self.green_count:get_text()
-	state.ATOMS_COUNT.BLUE = self.blue_count:get_text()
 	msg.post("main:/loader", "show_simulation")
 end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	local input = require("druid.extended.input")
-	druid.register("input", input)
-	self.druid = druid.new(self)
-	local slider = require("druid.extended.slider")
-	druid.register("slider", slider)
-
-	init_count_buttons(self)
-
-	self.red_sliderslider = self.druid:new_slider("slider_simple_pin", vmath.vector3(95, 0, 0), function(_, value)
-		gui.set_text(gui.get_node("slider_simple_text"), math.ceil(value * 999) .. "")
-	end)
+	init_druid_components(self)
+	
+	-- инициализируем слайдеры количеств цветов
+	init_color_sliders(self)
+	-- инициализируем слайдеры правил
+	init_rule_sliders(self)
 
 	self.druid:new_button("apply_button", apply_button)
 end

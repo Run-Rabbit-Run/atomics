@@ -17,11 +17,14 @@ dependencies#0 = https://github.com/britzl/monarch/archive/master.zip
 dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/0.11.0.zip
 
 [collectionfactory]
-max_count = 3000
+max_count = 8
 
 [sprite]
-max_count = 10000
+max_count = 5200
 
 [collection]
-max_instances = 10000
+max_instances = 5200
+
+[factory]
+max_count = 16
 
